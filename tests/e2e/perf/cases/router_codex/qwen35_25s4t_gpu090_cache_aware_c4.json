@@ -1,0 +1,63 @@
+{
+  "test_name": "qwen35_25s4t_gpu090_cache_aware_c4",
+  "topology": "single_router_dp",
+  "mode": "cache_aware",
+  "description": "Qwen3.5-4B DP=2, gpu-mem 0.9, Codex 25s4t (100 rows), cache-aware router lb_mid, C4",
+  "mark": [
+    {
+      "hardware_marks": {
+        "res": {
+          "gpu": "CUDA"
+        },
+        "num_cards": 2
+      }
+    }
+  ],
+  "serve_env": {
+    "CUDA_VISIBLE_DEVICES": "0,1"
+  },
+  "server_params": {
+    "model": "/path/to/Qwen3.5-4B",
+    "middleware": [],
+    "serve_args": {
+      "host": "127.0.0.1",
+      "port": 0,
+      "served-model-name": "qwen-codex-c4-abs2",
+      "tensor-parallel-size": 1,
+      "data-parallel-size": 2,
+      "max-model-len": 131072,
+      "gpu-memory-utilization": 0.9,
+      "enable-prefix-caching": true,
+      "trust-remote-code": true,
+      "max-num-seqs": 4,
+      "enable-prompt-tokens-details": true
+    }
+  },
+  "router_params": {
+    "bin": "agentrouter/target/release/vllm-router",
+    "host": "127.0.0.1",
+    "port": 0,
+    "prometheus-port": 0,
+    "policy": "cache_aware",
+    "config": "lb_mid:0.3:2:1.5",
+    "chat-routing-key-mode": "session-id-full-history-fallback",
+    "intra-node-data-parallel-size": 2
+  },
+  "result_root": "test-results/router-codex",
+  "benchmark_params": {
+    "sessions": 25,
+    "turns": 4,
+    "sample-order": "stratified_size",
+    "num-prompts": 100,
+    "max-concurrency": 4,
+    "max-tokens": 256,
+    "fire-mode": "session_serial",
+    "trace-requests": false,
+    "timeout": 7200
+  },
+  "assertions": {
+    "max-failed-requests": 0,
+    "min-successful-requests": 100,
+    "min-cache-aware-decisions-total": 1
+  }
+}

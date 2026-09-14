@@ -1,3 +1,3 @@
 # SPDX-License-Identifier: Apache-2.0
 # SPDX-FileCopyrightText: Copyright contributors to the AgentInfer project
-"""End-to-end tests for AgentInfer (performance, functional, and future suites)."""
+"""E2E functional tests (reserved for future workflows)."""

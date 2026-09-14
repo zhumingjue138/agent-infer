@@ -57,7 +57,8 @@ pytest tests/agentcache/ tests/agentbench/ -v
 
 ### Run E2E performance benchmarks (GPU / NPU, real model)
 
-See [`tests/e2e/README.md`](e2e/README.md). These cases are not part of CPU CI.
+See [`tests/e2e/README.md`](e2e/README.md). AgentBench and router Codex cases live under
+[`tests/e2e/perf/`](e2e/perf/README.md). These cases are not part of CPU CI.
 
 ### Run unit tests only (no GPU needed)
 
