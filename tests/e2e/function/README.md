@@ -11,7 +11,9 @@ weights, and (for replay) trace files.
 tests/e2e/
 ├── helpers/          # shared: case JSON, vLLM lifecycle, validate_completed_run
 ├── perf/             # BenchKit plan-subagent; baseline vs AgentInfer
-└── function/         # replay repeatability, future serve smoke, etc.
+└── function/         # correctness E2E (replay, AgentBench agents, …)
+    ├── agentbench/
+    │   └── dsh/      # DSH + SWE-bench Verified (issue #14 HMR regression)
     └── tracereplay/
         ├── helpers/  # shared replay E2E (config, executor, compare, pytest options)
         ├── specs.py  # inferact / tracelab / agentx ReplaySuiteSpec
@@ -19,6 +21,25 @@ tests/e2e/
         ├── tracelab/
         └── agentx/
 ```
+
+## DSH + SWE-bench (`agentbench/dsh/`)
+
+Functional BenchKit run (not replay): GLM-5.2 + DSH on SWE-bench Verified, default **8 tasks / 4 concurrency**.
+
+```bash
+pytest -s -v tests/e2e/function/agentbench/dsh/test_dsh_swebench.py::test_dsh_swebench \
+  --test-config-file tests/e2e/function/agentbench/dsh/cases/glm52_dsh_8x4.json
+```
+
+Case JSON sets `"functional_validation": "dsh_swebench"`; post-run checks live in
+[`../helpers/functional.py`](../helpers/functional.py) (summary/manifest, no HMR startup failure, DSH trace,
+`dsh-home` confinement). See [openJiuwen-ai/agent-infer#14](https://github.com/openJiuwen-ai/agent-infer/issues/14).
+
+| Concern | `perf/` | `function/agentbench/dsh` | `function/tracereplay/*` |
+| ------- | ------- | ------------------------- | ------------------------ |
+| Bench command | `vllm bench serve --agentinfer run` | same | `vllm bench serve --agentinfer replay` |
+| Default YAML | `swebench_vllm.yaml` (in case) | `swebench_vllm_dsh.yaml` | `replay_*.yaml` |
+| Pass criteria | Completes; perf compare elsewhere | Completes + DSH artifact checks | Cold replay × N + compare run 1 vs 2 |
 
 | Concern | `perf/` | `function/` (Inferact / TraceLab / AgentX replay) |
 | ------- | ------- | --------------------------------------------------- |

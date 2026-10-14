@@ -8,4 +8,5 @@ def pytest_configure(config):
     config.addinivalue_line("markers", "cpu_test: tests that run without GPU")
     config.addinivalue_line("markers", "gpu_test: tests that require GPU")
     config.addinivalue_line("markers", "e2e_perf: end-to-end performance benchmarks")
+    config.addinivalue_line("markers", "e2e_functional: correctness-oriented E2E (AgentBench, replay, etc.)")
     config.addinivalue_line("markers", "benchmark_smoke: hermetic AgentBench benchmark contract tests")

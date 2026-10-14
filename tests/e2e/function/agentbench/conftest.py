@@ -1,6 +1,6 @@
 # SPDX-License-Identifier: Apache-2.0
 # SPDX-FileCopyrightText: Copyright contributors to the AgentInfer project
-"""Pytest options for E2E benchmark runs."""
+"""Pytest CLI options for AgentBench functional E2E (DSH SWE-bench, etc.)."""
 
 from __future__ import annotations
 
@@ -8,13 +8,13 @@ import pytest
 
 
 def pytest_addoption(parser: pytest.Parser) -> None:
-    group = parser.getgroup("e2e", "E2E performance benchmark options")
+    group = parser.getgroup("agentbench_e2e", "AgentBench functional E2E options")
     group.addoption(
         "--test-config-file",
         action="store",
         default=None,
         metavar="PATH",
-        help=('Case JSON path; scenario from JSON "scenario" (or legacy "arm") or cases/baseline|agentinfer/ path.'),
+        help="Case JSON under tests/e2e/function/agentbench/<suite>/cases/",
     )
     group.addoption(
         "--task-num",

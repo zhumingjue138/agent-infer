@@ -1,6 +1,7 @@
 {
-  "test_name": "glm52_24x12_plan_subagent",
+  "test_name": "glm52_dsh_8x4",
   "scenario": "baseline",
+  "functional_validation": "dsh_swebench",
   "mark": [
     {
       "hardware_marks": {
@@ -11,7 +12,7 @@
       }
     }
   ],
-  "description": "GLM-5.2 Ascend baseline AsyncScheduler serve profile (16 TP), 24 tasks x 12 concurrency",
+  "description": "GLM-5.2 Ascend baseline vLLM + DSH, SWE-bench Verified 8 tasks x 4 concurrency",
   "serve_env": {
     "HCCL_OP_EXPANSION_MODE": "AIV",
     "OMP_PROC_BIND": "false",
@@ -23,6 +24,7 @@
   },
   "server_params": {
     "model": "Eco-Tech/GLM-5.2-w4a8c8",
+    "middleware": [],
     "serve_args": {
       "served-model-name": "glm-5",
       "enable-prefix-caching": true,
@@ -62,17 +64,18 @@
   },
   "result_root": "test-results/vllm",
   "benchmark_params": {
-    "config": "agentinfer/agentbench/configs/swebench_vllm.yaml",
+    "config": "agentinfer/agentbench/configs/swebench_vllm_dsh.yaml",
     "prepare_dataset": "swebench",
     "prepare_output_dir": "agentinfer/agentbench/data/swebench",
     "host": "127.0.0.1",
     "port": 8000,
     "model": "glm-5",
-    "agent-executable": "/path/to/claude",
-    "agent-profile": "plan-subagent",
-    "benchmark-run-as-user": "test-user",
-    "task-num": 24,
-    "max-concurrency": 12,
-    "timeout": 3600
+    "agent-type": "dsh",
+    "agent-executable": "dsh",
+    "agent-profile": "single",
+    "endpoint": "/v1/chat/completions",
+    "task-num": 8,
+    "max-concurrency": 4,
+    "timeout": 14400
   }
 }
