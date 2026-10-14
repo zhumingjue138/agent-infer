@@ -1,0 +1,85 @@
+# Tag-driven release: build wheel/sdist, smoke-install, attach to GitHub Release.
+# Optional PyPI upload: create a "pypi" environment + Trusted Publishing on PyPI
+# (https://docs.pypi.org/trusted-publishers/), or set PYPI_API_TOKEN on that environment.
+name: Release
+
+on:
+  push:
+    tags:
+      - "v*"
+
+concurrency:
+  group: release-${{ github.ref }}
+  cancel-in-progress: false
+
+permissions:
+  contents: write
+  id-token: write
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.10"
+
+      - name: Verify tag matches pyproject.toml version
+        run: |
+          set -euo pipefail
+          TAG="${GITHUB_REF_NAME#v}"
+          VERSION="$(grep -E '^version = ' pyproject.toml | head -1 | sed -E 's/^version = "([^"]+)".*/\1/')"
+          echo "tag version: ${TAG}"
+          echo "pyproject version: ${VERSION}"
+          if [ "$TAG" != "$VERSION" ]; then
+            echo "::error::Git tag v${TAG} must match pyproject.toml version ${VERSION}"
+            exit 1
+          fi
+
+      - name: Install build tooling
+        run: pip install build
+
+      - name: Build sdist and wheel
+        run: python -m build
+
+      - name: Smoke install wheel
+        run: |
+          set -euo pipefail
+          WHEEL=(dist/agentinfer-*.whl)
+          pip install "${WHEEL[0]}"
+          python -c "import agentinfer; print('agentinfer import ok')"
+
+      - uses: actions/upload-artifact@v4
+        with:
+          name: release-dist
+          path: dist/*
+
+  github-release:
+    needs: build
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/download-artifact@v4
+        with:
+          name: release-dist
+          path: dist
+
+      - name: Upload release assets
+        uses: softprops/action-gh-release@v2
+        with:
+          files: dist/*
+          generate_release_notes: true
+
+  # pypi:
+  #   needs: build
+  #   runs-on: ubuntu-latest
+  #   environment: pypi
+  #   steps:
+  #     - uses: actions/download-artifact@v4
+  #       with:
+  #         name: release-dist
+  #         path: dist
+
+  #     - name: Publish to PyPI
+  #       uses: pypa/gh-action-pypi-publish@release/v1
