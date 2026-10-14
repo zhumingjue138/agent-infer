@@ -1,6 +1,12 @@
-# Tag-driven release: build wheel/sdist, smoke-install, attach to GitHub Release.
-# Optional PyPI upload: create a "pypi" environment + Trusted Publishing on PyPI
-# (https://docs.pypi.org/trusted-publishers/), or set PYPI_API_TOKEN on that environment.
+# Tag-driven release: build wheel/sdist, smoke-install, attach to GitHub Release, optional PyPI.
+#
+# Private repo → personal PyPI (quickest trial):
+#   1. GitHub: Settings → Environments → create "pypi"
+#   2. Add environment secret PYPI_API_TOKEN (PyPI account → API tokens → scoped upload)
+#   3. Re-run the "pypi" job (or push the tag again)
+#
+# OIDC instead of token: PyPI Trusted Publisher for this repo + workflow file + environment "pypi"
+#   https://docs.pypi.org/trusted-publishers/
 name: Release
 
 on:
@@ -71,15 +77,17 @@ jobs:
           files: dist/*
           generate_release_notes: true
 
-  # pypi:
-  #   needs: build
-  #   runs-on: ubuntu-latest
-  #   environment: pypi
-  #   steps:
-  #     - uses: actions/download-artifact@v4
-  #       with:
-  #         name: release-dist
-  #         path: dist
+  pypi:
+    needs: build
+    runs-on: ubuntu-latest
+    environment: pypi
+    steps:
+      - uses: actions/download-artifact@v4
+        with:
+          name: release-dist
+          path: dist
 
-  #     - name: Publish to PyPI
-  #       uses: pypa/gh-action-pypi-publish@release/v1
+      - name: Publish to PyPI
+        uses: pypa/gh-action-pypi-publish@release/v1
+        with:
+          password: ${{ secrets.PYPI_API_TOKEN }}

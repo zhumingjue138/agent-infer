@@ -3,7 +3,7 @@ requires = ["setuptools>=68,<85", "wheel"]
 build-backend = "setuptools.build_meta"
 
 [project]
-name = "agentinfer"
+name = "agentinfer-zmj-test"
 version = "0.1.0"
 requires-python = ">=3.10"
 dependencies = ["datasets", "fastapi", "httpx", "huggingface-hub", "matplotlib", "numpy", "prometheus-client", "PyYAML", "pydantic>=2", "tqdm", "uvicorn", "websockets", "zstandard"]
