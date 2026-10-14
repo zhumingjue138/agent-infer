@@ -53,8 +53,13 @@ jobs:
       - name: Smoke install wheel
         run: |
           set -euo pipefail
-          WHEEL=(dist/agentinfer-*.whl)
-          pip install "${WHEEL[0]}"
+          shopt -s nullglob
+          wheels=(dist/*.whl)
+          if [ "${#wheels[@]}" -ne 1 ]; then
+            echo "::error::expected exactly one wheel in dist/, found ${#wheels[@]}"
+            exit 1
+          fi
+          pip install "${wheels[0]}"
           python -c "import agentinfer; print('agentinfer import ok')"
 
       - uses: actions/upload-artifact@v4
