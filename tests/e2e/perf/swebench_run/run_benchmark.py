@@ -8,8 +8,8 @@ from pathlib import Path
 
 import pytest
 
-from ..helpers.benchmark import run_benchmark, validate_completed_run
-from ..helpers.case_loader import E2EConfig, load_case_file
+from ...helpers.benchmark import run_benchmark, validate_completed_run
+from ...helpers.case_loader import E2EConfig, load_case_file
 
 
 @pytest.mark.e2e_perf
