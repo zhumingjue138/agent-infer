@@ -13,7 +13,6 @@ from tests.e2e.helpers.case_loader import (
     BenchmarkCase,
     E2EConfig,
     PerfScenario,
-    _make_run_tag,
     _parse_deploy_case,
     _repo_root,
 )
@@ -87,7 +86,6 @@ def build_l1_vllm_e2e_config(serve_config_file: Path) -> tuple[E2EConfig, str]:
     if not isinstance(ready_timeout, int) or ready_timeout <= 0:
         raise ValueError("serve_ready_timeout_seconds must be a positive integer")
 
-    run_tag = _make_run_tag()
     result_root = deploy.result_root
     case = BenchmarkCase(
         test_name="router-replay-l1-prepare",
@@ -100,7 +98,7 @@ def build_l1_vllm_e2e_config(serve_config_file: Path) -> tuple[E2EConfig, str]:
             "host": connect_host,
             "port": port,
             "timeout": ready_timeout,
-            "config": "tests/e2e/perf/router-replay/configs/replay-full.example.yaml",
+            "config": "tests/e2e/perf/router-replay/configs/replay-full.yaml",
             "prepare_dataset": "noop",
             "prepare_output_dir": str(result_root / "noop-dataset"),
         },

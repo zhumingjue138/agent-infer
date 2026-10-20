@@ -1,4 +1,4 @@
-{
+﻿{
   "test_name": "glm52_24x12_router_replay_program_scheduling",
   "router_arm": "program_scheduling",
   "description": "GLM-5.2 Ascend DP2xTP8 serve, Router full program scheduling, 24 tasks x 12 concurrency replay",
@@ -66,7 +66,7 @@
   "wait_for_vllm_ready": true,
   "benchmark_params": {
     "workload": "router-replay",
-    "config": "tests/e2e/perf/router-replay/configs/replay-full.example.yaml",
+    "config": "tests/e2e/perf/router-replay/configs/replay-full.yaml",
     "model": "glm-5",
     "task-num": 24,
     "max-concurrency": 12,

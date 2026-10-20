@@ -1,5 +1,7 @@
-{
-  "description": "vLLM serve for router-replay L1 (prefill/decode calibration). Copy and fix model path before prepare_l1.",
+﻿{
+  "test_name": "glm52_64x32_router_replay_binding_only",
+  "router_arm": "binding_only",
+  "description": "GLM-5.2 Ascend DP2xTP8 serve, Router binding_only program scheduling, 64 tasks x 32 concurrency replay",
   "serve_env": {
     "HCCL_OP_EXPANSION_MODE": "AIV",
     "OMP_PROC_BIND": "false",
@@ -30,7 +32,9 @@
       "trust-remote-code": true,
       "gpu-memory-utilization": 0.92,
       "quantization": "ascend",
-      "compilation-config": {"cudagraph_mode": "FULL_DECODE_ONLY"},
+      "compilation-config": {
+        "cudagraph_mode": "FULL_DECODE_ONLY"
+      },
       "additional-config": {
         "enable_dsa_cp": true,
         "enable_sparse_sfa_c8": false,
@@ -49,7 +53,29 @@
       "enable-prompt-tokens-details": true
     }
   },
+  "router_params": {
+    "binary": "/path/to/router/target/release/vllm-router",
+    "host": "0.0.0.0",
+    "port": 3001,
+    "metrics_port": 29000,
+    "worker_urls": [
+      "http://127.0.0.1:8077"
+    ],
+    "intra_node_data_parallel_size": 2,
+    "program_scheduling_config": "results/router-replay/l1/program-scheduling-binding-only.json",
+    "ready_url": "http://127.0.0.1:3001/health",
+    "ready_timeout_seconds": 600
+  },
+  "result_root": "test-results/router-replay",
   "wait_for_vllm_ready": true,
-  "serve_ready_timeout_seconds": 7200,
-  "result_root": "test-results/router-replay/l1-prep"
+  "benchmark_params": {
+    "workload": "router-replay",
+    "config": "tests/e2e/perf/router-replay/configs/replay-full.yaml",
+    "model": "glm-5",
+    "task-num": 64,
+    "max-concurrency": 32,
+    "timeout": 3600,
+    "worker_metrics_url": "http://127.0.0.1:8077/metrics",
+    "worker_tokenizer_base_url": "http://127.0.0.1:8077"
+  }
 }

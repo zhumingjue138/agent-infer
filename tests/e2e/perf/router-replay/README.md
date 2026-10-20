@@ -16,7 +16,7 @@ the omissions and overrides below.
 | Program JSON (PR 357–404) | **Same L1 run** — `results/router-replay/l1/program-scheduling*.json`; L2 cases reference paths only. |
 | Start Router (PR 406–424) | **L2** — per case, one program config arm. |
 | Health before replay (PR 426–431) | **L2** — poll Router (and serve) ready; **then** start bench. |
-| `replay-full.yaml` (PR 433–476) | **L1 local file** — shape in [`configs/replay-full.example.yaml`](configs/replay-full.example.yaml); deployment paths are not pinned in the main repo. |
+| `replay-full.yaml` (PR 433–476) | **L2** — [`configs/replay-full.yaml`](configs/replay-full.yaml); set trace and deployment paths locally. |
 | Full replay (PR 478–497) | **L2** — `vllm bench serve --agentinfer replay`. |
 | Compare arms (PR 499+) | **Out of scope** — run two case files separately; compare artifacts manually if needed. |
 
@@ -47,8 +47,8 @@ When `run_benchmark.py` is implemented, print one line on success, for example:
 L1 is **not** pytest. One script **starts vLLM serve**, runs **prefill + decode calibration**, writes **both
 program JSON files** under a fixed directory, then **stops serve**. L2 cases only read those JSON paths.
 
-Copy [`configs/l1-serve.example.json`](configs/l1-serve.example.json) → `configs/l1-serve.json` (fix model path;
-keep the same `serve_args` shape as your replay cases), then from the repo root:
+Edit [`configs/l1-serve.json`](configs/l1-serve.json) (model path and `serve_args` aligned with replay cases),
+then from the repo root:
 
 ```bash
 cd "${AGENTINFER_DIR}"
@@ -85,8 +85,8 @@ Decode batch sizes default to **`1,2,4,8,12`** (suited to `max-num-seqs=12`).
 ## Case JSON (L2 — serve, router, replay load)
 
 Step 7 **task count, concurrency, timeout**, and **vLLM serve startup** live in the case file (same idea as
-`swebench_run` and `function/tracereplay`). Workload matrix (**task-num = 2 × max-concurrency**), same naming as other GLM perf cases
-(`glm52_<tasks>x<concurrency>_router_replay`):
+`swebench_run` and `function/tracereplay`). Workload matrix (**task-num = 2 × max-concurrency**), same naming as
+other GLM perf cases (`glm52_<tasks>x<concurrency>_router_replay`):
 
 | File suffix | task-num | max-concurrency |
 | ----------- | -------- | --------------- |
@@ -95,8 +95,8 @@ Step 7 **task count, concurrency, timeout**, and **vLLM serve startup** live in 
 | `48x24` | 48 | 24 |
 | `64x32` | 64 | 32 |
 
-Each shape exists under **`cases/binding_only/`** and **`cases/program_scheduling/`** (8 templates total).
-Copy one file, fix deployment paths, drop the `.example` suffix when ready to run.
+Each shape exists under **`cases/binding_only/`** and **`cases/program_scheduling/`** (8 case JSON files).
+Fix deployment paths (model, router binary, trace in replay yaml) before running.
 
 ```bash
 pytest -s -v tests/e2e/perf/router-replay/run_benchmark.py \
@@ -121,11 +121,11 @@ pytest ... --task-num 16 --max-concurrency 8   # optional overrides (same as swe
 | `benchmark_params.model` | Served name passed to replay CLI (`glm-5`). |
 | `benchmark_params.worker_metrics_url` / `worker_tokenizer_base_url` | Worker observability endpoints (yaml may mirror; case keeps worker URL explicit for single-host). |
 
-Trace path and prefix tuning stay in the **deployment copy** of the replay yaml referenced by `benchmark_params.config`; the example yaml lists shape only.
+Trace path and prefix tuning live in [`configs/replay-full.yaml`](configs/replay-full.yaml) (via `benchmark_params.config`).
 
-## Replay configuration (L1)
+## Replay configuration
 
-Use [`configs/replay-full.example.yaml`](configs/replay-full.example.yaml) as the schema reference:
+[`configs/replay-full.yaml`](configs/replay-full.yaml):
 
 - Traffic: `backend.base_url` → Router (`:3001`).
 - Observability / tokenize: `metrics_url`, `tokenizer_base_url` → worker (often `:8077` on loopback for single-host).
@@ -141,10 +141,10 @@ Use [`configs/replay-full.example.yaml`](configs/replay-full.example.yaml) as th
 | `helpers/case_config.py` | Load case JSON → `RouterReplayE2EConfig` |
 | `helpers/replay_cli.py` | Build `vllm bench … replay` argv (Router `base-url`) |
 | `helpers/replay_runner.py` | `managed_vllm` → `managed_router` → replay → validate |
-| `cases/…/*.example.json` | Case templates (four task×concurrency shapes × two router arms) |
-| `configs/replay-full.example.yaml` | Replay YAML shape (placeholders only) |
+| `cases/…/*.json` | Cases (four task×concurrency shapes × two router arms) |
+| `configs/replay-full.yaml` | Replay YAML (set trace path locally) |
 | `prepare_l1.py` | L1 prerequisite: serve → calibrate → program JSON → stop serve |
-| `configs/l1-serve.example.json` | Serve template for L1 |
+| `configs/l1-serve.json` | Serve config for L1 |
 
 Shared E2E helpers ([`../../helpers/`](../../helpers/)):
 

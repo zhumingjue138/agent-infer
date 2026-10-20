@@ -1,5 +1,5 @@
-# Example Replay config for router-replay perf (PR 286-style full replay).
-# Copy to a deployment-local path; do not commit secrets or host-specific URLs.
+# Replay config for router-replay perf (PR 286-style full replay).
+# Set deployment-local paths (trace, result_dir); do not commit secrets.
 # CLI overrides (--task-num, --max-concurrency, --result-dir) take precedence when wired in case JSON.
 
 experiment:
