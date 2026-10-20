@@ -1,4 +1,4 @@
-﻿{
+{
   "test_name": "glm52_24x12_router_replay_program_scheduling",
   "router_arm": "program_scheduling",
   "description": "GLM-5.2 Ascend DP2xTP8 serve, Router full program scheduling, 24 tasks x 12 concurrency replay",

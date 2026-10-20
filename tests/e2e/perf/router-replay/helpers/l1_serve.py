@@ -31,7 +31,7 @@ def load_serve_config_payload(path: Path) -> dict[str, Any]:
     resolved = path.expanduser().resolve()
     if not resolved.is_file():
         raise FileNotFoundError(f"serve config not found: {path}")
-    payload = json.loads(resolved.read_text(encoding="utf-8"))
+    payload = json.loads(resolved.read_text(encoding="utf-8-sig"))
     if not isinstance(payload, dict):
         raise ValueError(f"serve config root must be an object: {path}")
     return payload

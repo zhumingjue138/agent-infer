@@ -1,4 +1,4 @@
-﻿{
+{
   "test_name": "glm52_64x32_router_replay_binding_only",
   "router_arm": "binding_only",
   "description": "GLM-5.2 Ascend DP2xTP8 serve, Router binding_only program scheduling, 64 tasks x 32 concurrency replay",

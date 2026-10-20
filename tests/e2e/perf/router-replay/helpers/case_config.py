@@ -58,7 +58,7 @@ class RouterReplayE2EConfig:
         path = case_file.expanduser().resolve()
         if not path.is_file() or path.suffix != ".json":
             raise ValueError(f"--test-config-file must point to a .json file: {case_file}")
-        payload = json.loads(path.read_text(encoding="utf-8"))
+        payload = json.loads(path.read_text(encoding="utf-8-sig"))
         if not isinstance(payload, dict):
             raise ValueError(f"case JSON root must be an object: {case_file}")
 
