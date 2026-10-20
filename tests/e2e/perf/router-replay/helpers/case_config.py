@@ -169,7 +169,8 @@ class RouterReplayE2EConfig:
             f"run-{hardware_slug}-{host_slug}-router-replay-{self.router_arm}-"
             f"{self.task_num}-{self.max_concurrency}-{self.run_tag}"
         )
-        ensure_directory(self.result_root)
+        # Replay bench is not sudo-wrapped (no plan-subagent); unlike swebench_run.
+        ensure_directory(self.result_root, run_as_user=None)
         return self.result_root / name
 
     def validate_prerequisites(self) -> list[str]:
