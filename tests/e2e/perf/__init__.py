@@ -1,1 +1,1 @@
-"""End-to-end performance and soak tests for AgentInfer benchmark workflows."""
+"""E2E performance suites: ``swebench_run`` and ``router-replay``."""
